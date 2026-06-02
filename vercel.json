@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://videolibrary-backend-k9n7.onrender.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://videolibrary-backend-k9n7.onrender.com/uploads/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
