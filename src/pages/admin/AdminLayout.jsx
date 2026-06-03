@@ -6,6 +6,8 @@ const tabs = [
   { to: '/admin/view', label: 'View videos' },
   { to: '/admin/categories', label: 'Categories' },
   { to: '/admin/status-videos', label: 'Status videos' },
+  { to: '/admin/promotional', label: 'Promotional video' },
+  { to: '/admin/today', label: "Today's video" },
   { to: '/admin/status', label: 'Status review' },
   { to: '/admin/customers', label: 'Customers' },
 ];

@@ -6,9 +6,11 @@ export default function Videos() {
   const [data, setData] = useState(null);
   const [playing, setPlaying] = useState(null); // video id currently playing (YouTube)
   const [category, setCategory] = useState('all'); // selected category filter
+  const [featured, setFeatured] = useState(null); // { promotional, today } for today
 
   useEffect(() => {
     api.get('/web/videos/library').then((r) => setData(r.data)).catch(() => {});
+    api.get('/web/videos/featured').then((r) => setFeatured(r.data)).catch(() => {});
   }, []);
 
   // Categories that actually have videos, in canonical order, plus a count each.
@@ -83,9 +85,33 @@ export default function Videos() {
       </div>
 
       <div className="flex flex-col gap-6 lg:flex-row">
-        {/* Left-side category filter menu */}
+        {/* Left-side filter menu: featured videos + categories */}
         <aside className="lg:w-60 lg:shrink-0">
           <div className="sticky top-4 rounded-2xl bg-white p-3 shadow-sm">
+            {(featured?.promotional || featured?.today) && (
+              <>
+                <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  Featured
+                </p>
+                <nav className="mb-3 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+                  {featured.promotional && (
+                    <CatButton
+                      label="📣 Promotional video"
+                      active={category === 'promo'}
+                      onClick={() => setCategory('promo')}
+                    />
+                  )}
+                  {featured.today && (
+                    <CatButton
+                      label="⭐ Today's video"
+                      active={category === 'today'}
+                      onClick={() => setCategory('today')}
+                    />
+                  )}
+                </nav>
+              </>
+            )}
+
             <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
               Categories
             </p>
@@ -109,12 +135,19 @@ export default function Videos() {
           </div>
         </aside>
 
-        {/* Right side: levels stacked, highest on top — a divider after each */}
+        {/* Right side: featured player, or levels stacked highest-on-top */}
         <div className="min-w-0 flex-1">
-          {groups.length === 0 && (
+          {category === 'promo' && featured?.promotional && (
+            <FeaturedCard label="📣 Promotional video" item={featured.promotional} />
+          )}
+          {category === 'today' && featured?.today && (
+            <FeaturedCard label="⭐ Today's video" item={featured.today} />
+          )}
+
+          {category !== 'promo' && category !== 'today' && groups.length === 0 && (
             <p className="text-sm text-slate-500">No videos in this category yet.</p>
           )}
-          {groups.map((g) => (
+          {category !== 'promo' && category !== 'today' && groups.map((g) => (
             <section key={g.key} className="mb-8 border-b border-slate-200 pb-8 last:mb-0 last:border-0">
               <div className="mb-2 flex items-center gap-2">
                 <h2 className="text-lg font-bold text-slate-800">
@@ -137,6 +170,30 @@ export default function Videos() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function FeaturedCard({ label, item }) {
+  return (
+    <div className="card overflow-hidden p-0">
+      <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-2.5">
+        <p className="text-sm font-bold text-slate-800">{label}</p>
+        {item.title && <span className="truncate text-xs text-slate-400">{item.title}</span>}
+      </div>
+      {item.videoType === 'upload' ? (
+        <video className="aspect-video w-full bg-black" src={item.videoUrl} controls preload="metadata" />
+      ) : (
+        <div className="aspect-video w-full bg-black">
+          <iframe
+            className="h-full w-full"
+            src={`https://www.youtube.com/embed/${item.youtubeId}`}
+            title={item.title || label}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -170,13 +227,15 @@ function CatButton({ label, count, active, onClick }) {
       }`}
     >
       <span className="whitespace-nowrap lg:whitespace-normal">{label}</span>
-      <span
-        className={`rounded-full px-2 py-0.5 text-xs ${
-          active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
-        }`}
-      >
-        {count}
-      </span>
+      {count != null && (
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs ${
+            active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+          }`}
+        >
+          {count}
+        </span>
+      )}
     </button>
   );
 }
