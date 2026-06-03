@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 const links = [
   { to: '/', label: 'Home', icon: '🏆' },
-  { to: '/referrals', label: 'Referrals', icon: '🤝' },
+  { to: '/referrals', label: 'Warm Leads', icon: '🤝' },
   { to: '/status', label: 'Status', icon: '📸' },
   { to: '/rewards', label: 'Rewards', icon: '🎁' },
   { to: '/videos', label: 'Videos', icon: '▶️' },

@@ -9,7 +9,7 @@ export default function AdminCustomers() {
   useEffect(() => { load(); }, []);
 
   const addReferral = async (id) => {
-    const name = prompt('Referred person name (counts as a "said hi" referral):', 'Friend');
+    const name = prompt('Warm lead name (counts as a "said hi" warm lead):', 'Friend');
     if (name === null) return;
     await adminApi.post(`/web/admin/customers/${id}/referrals`, { name, repliedWithHi: true });
     load();
@@ -36,7 +36,7 @@ export default function AdminCustomers() {
               <th className="p-3">Name</th>
               <th className="p-3">Phone</th>
               <th className="p-3">Badge</th>
-              <th className="p-3 text-center">Refs</th>
+              <th className="p-3 text-center">Warm leads</th>
               <th className="p-3 text-center">Status</th>
               <th className="p-3 text-right">Actions</th>
             </tr>
@@ -51,7 +51,7 @@ export default function AdminCustomers() {
                 <td className="p-3 text-center">{c.verifiedStatusCount}</td>
                 <td className="p-3 text-right">
                   <button onClick={() => addReferral(c.id)} className="mr-3 text-brand-600 hover:underline">
-                    + Referral
+                    + Warm lead
                   </button>
                   <button onClick={() => resetPin(c.id)} className="text-red-500 hover:underline">
                     Reset PIN
@@ -63,7 +63,7 @@ export default function AdminCustomers() {
         </table>
       </div>
       <p className="text-xs text-slate-400">
-        "+ Referral" adds a verified warm lead. Approving status screenshots happens in the
+        "+ Warm lead" adds a verified warm lead. Approving status screenshots happens in the
         Status review tab. Both feed the reward engine's AND-gate automatically.
       </p>
     </div>

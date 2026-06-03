@@ -150,7 +150,7 @@ function UnlockNote({ g }) {
         </p>
       ) : (
         <p className="text-base font-bold text-amber-800">
-          To unlock full videos: {g.referralsNeeded} more referral
+          To unlock full videos: {g.referralsNeeded} more warm lead
           {g.referralsNeeded === 1 ? '' : 's'} & {g.statusesNeeded} more WhatsApp status
           {g.statusesNeeded === 1 ? '' : 'es'}
         </p>

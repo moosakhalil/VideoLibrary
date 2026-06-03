@@ -34,7 +34,7 @@ export default function Dashboard() {
           <p className="text-2xl font-bold">{customer?.badge?.name || 'No badge yet'}</p>
           {customer?.badge?.reward && <p className="text-sm text-brand-100">{customer.badge.reward}</p>}
           <div className="mt-2 flex justify-center gap-4 text-sm sm:justify-start">
-            <span>🤝 {customer?.referralCount ?? 0} referrals</span>
+            <span>🤝 {customer?.referralCount ?? 0} warm leads</span>
             <span>📸 {customer?.verifiedStatusCount ?? 0} statuses</span>
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function Dashboard() {
         {progress && (
           <div className="card space-y-4">
             <p className="text-xs uppercase tracking-wide text-slate-400">Next level</p>
-            <ProgressBar label="Referrals" have={progress.referrals.have} need={progress.referrals.need} />
+            <ProgressBar label="Warm leads" have={progress.referrals.have} need={progress.referrals.need} />
             <ProgressBar
               label="WhatsApp statuses"
               have={progress.statuses.have}

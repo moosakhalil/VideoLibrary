@@ -30,7 +30,7 @@ export default function Referrals() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-slate-800">Referrals</h1>
+      <h1 className="text-xl font-bold text-slate-800">Warm Leads</h1>
 
       <div className="card space-y-3">
         <p className="text-xs uppercase tracking-wide text-slate-400">Your referral code</p>
@@ -59,10 +59,10 @@ export default function Referrals() {
             <Stat label="Customers" value={list.becameCustomers} />
             <Stat label="Total" value={list.total} />
           </div>
-          <p className="mb-2 text-xs uppercase tracking-wide text-slate-400">People you referred</p>
+          <p className="mb-2 text-xs uppercase tracking-wide text-slate-400">Your warm leads</p>
           <div className="divide-y divide-slate-100">
             {list.people.length === 0 && (
-              <p className="py-3 text-sm text-slate-500">No referrals yet. Share your code!</p>
+              <p className="py-3 text-sm text-slate-500">No warm leads yet. Share your code!</p>
             )}
             {list.people.map((p) => {
               const s = stateLabel[p.state] || stateLabel.invited;

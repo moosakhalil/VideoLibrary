@@ -14,6 +14,7 @@ import AdminLayout from './pages/admin/AdminLayout.jsx';
 import AdminVideos from './pages/admin/AdminVideos.jsx';
 import AdminViewVideos from './pages/admin/AdminViewVideos.jsx';
 import AdminCategories from './pages/admin/AdminCategories.jsx';
+import AdminStatusVideos from './pages/admin/AdminStatusVideos.jsx';
 import AdminStatus from './pages/admin/AdminStatus.jsx';
 import AdminCustomers from './pages/admin/AdminCustomers.jsx';
 
@@ -52,6 +53,7 @@ export default function App() {
         <Route index element={<AdminVideos />} />
         <Route path="view" element={<AdminViewVideos />} />
         <Route path="categories" element={<AdminCategories />} />
+        <Route path="status-videos" element={<AdminStatusVideos />} />
         <Route path="status" element={<AdminStatus />} />
         <Route path="customers" element={<AdminCustomers />} />
       </Route>
