@@ -339,35 +339,39 @@ export default function AdminVideos() {
       )}
       {Object.entries(byCat).map(([cat, list]) => (
         <div key={cat} className="space-y-2">
-          <h2 className="font-bold text-slate-700">{cat} <span className="text-sm font-normal text-slate-400">({list.length})</span></h2>
+          <h2 className="text-xl font-bold text-slate-700">{cat} <span className="text-base font-normal text-slate-400">({list.length})</span></h2>
           <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
             {list.map((v) => (
-              <div key={v._id} className="flex items-center gap-3 border-b border-slate-100 p-3 last:border-0">
+              <div key={v._id} className="flex items-center gap-4 border-b border-slate-100 p-4 last:border-0">
                 {v.videoType === 'upload' ? (
-                  <div className="flex h-12 w-20 items-center justify-center rounded bg-slate-800 text-lg text-white">🎬</div>
+                  <div className="flex h-16 w-28 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-3xl text-white">🎬</div>
                 ) : (
-                  <img src={`https://img.youtube.com/vi/${v.youtubeId}/default.jpg`} alt="" className="h-12 w-20 rounded object-cover" />
+                  <img src={`https://img.youtube.com/vi/${v.youtubeId}/default.jpg`} alt="" className="h-16 w-28 shrink-0 rounded-lg object-cover" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-700">{v.title}</p>
-                  <p className="text-xs text-slate-400">
-                    {v.videoType === 'upload' ? 'Uploaded file' : v.youtubeId} · order {v.sortOrder}
-                    {v.sampleType && v.sampleType !== 'none' && ' · 🎬 sample'}
-                  </p>
+                  <p className="truncate text-base font-semibold text-slate-800">{v.title}</p>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-400">
+                    <span>{v.videoType === 'upload' ? 'Uploaded file' : v.youtubeId} · order {v.sortOrder}</span>
+                    {v.sampleType && v.sampleType !== 'none' && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-brand-300 bg-brand-50 px-2.5 py-0.5 text-sm font-semibold text-brand-700">
+                        🎬 sample
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <span className="hidden rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700 sm:inline">
+                <span className="hidden rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700 sm:inline">
                   {v.accessLevel === 'vip' ? 'VIP' : BADGE_SHORT[v.minBadge || 0]}
                 </span>
                 <button
                   onClick={() => toggleActive(v)}
-                  className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                  className={`rounded-full px-3 py-1 text-sm font-semibold ${
                     v.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'
                   }`}
                 >
                   {v.isActive ? 'active' : 'hidden'}
                 </button>
-                <button onClick={() => startEdit(v)} className="text-sm text-brand-600 hover:underline">Edit</button>
-                <button onClick={() => remove(v._id)} className="text-sm text-red-500 hover:underline">Delete</button>
+                <button onClick={() => startEdit(v)} className="text-base font-medium text-brand-600 hover:underline">Edit</button>
+                <button onClick={() => remove(v._id)} className="text-base font-medium text-red-500 hover:underline">Delete</button>
               </div>
             ))}
           </div>
