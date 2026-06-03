@@ -12,6 +12,7 @@ import Profile from './pages/Profile.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
 import AdminLayout from './pages/admin/AdminLayout.jsx';
 import AdminVideos from './pages/admin/AdminVideos.jsx';
+import AdminCategories from './pages/admin/AdminCategories.jsx';
 import AdminStatus from './pages/admin/AdminStatus.jsx';
 import AdminCustomers from './pages/admin/AdminCustomers.jsx';
 
@@ -48,6 +49,7 @@ export default function App() {
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminVideos />} />
+        <Route path="categories" element={<AdminCategories />} />
         <Route path="status" element={<AdminStatus />} />
         <Route path="customers" element={<AdminCustomers />} />
       </Route>

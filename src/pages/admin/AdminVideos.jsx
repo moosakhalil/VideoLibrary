@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { adminApi } from '../../api/client.js';
+import { CATEGORIES } from '../../constants/categories.js';
 
-const EMPTY = { title: '', youtubeId: '', category: '', visibility: 'all', sortOrder: 0, sampleYoutubeId: '' };
+const EMPTY = { title: '', youtubeId: '', categories: [], visibility: 'all', sortOrder: 0, sampleYoutubeId: '' };
 
 // "Visible to" options. Access is cumulative — a customer also sees every lower badge.
 const VISIBILITY = [
@@ -49,13 +50,22 @@ export default function AdminVideos() {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
+  // Toggle one category on/off in the multi-select form state.
+  const toggleCategory = (c) =>
+    setForm((f) => ({
+      ...f,
+      categories: f.categories.includes(c)
+        ? f.categories.filter((x) => x !== c)
+        : [...f.categories, c],
+    }));
+
   const startEdit = (v) => {
     setEditingId(v._id);
     setSource(v.videoType);
     setForm({
       title: v.title,
       youtubeId: v.youtubeId,
-      category: v.category,
+      categories: v.categories?.length ? v.categories : v.category ? [v.category] : [],
       visibility: fieldsToVis(v),
       sortOrder: v.sortOrder,
       sampleYoutubeId: v.sampleYoutubeId || '',
@@ -81,12 +91,13 @@ export default function AdminVideos() {
     setMsg('');
     setBusy(true);
     const access = visToFields(form.visibility);
+    if (form.categories.length === 0) { setBusy(false); return setMsg('Please pick at least one category.'); }
     try {
       if (editingId) {
         // Edit = metadata only (main media stays as-is). Sample YouTube/clear allowed.
         const body = {
           title: form.title,
-          category: form.category,
+          categories: form.categories,
           accessLevel: access.accessLevel,
           minBadge: access.minBadge,
           sortOrder: form.sortOrder,
@@ -103,7 +114,7 @@ export default function AdminVideos() {
 
         const fd = new FormData();
         fd.append('title', form.title);
-        fd.append('category', form.category);
+        fd.append('categories', JSON.stringify(form.categories));
         fd.append('accessLevel', access.accessLevel);
         fd.append('minBadge', String(access.minBadge));
         fd.append('sortOrder', String(form.sortOrder));
@@ -137,10 +148,15 @@ export default function AdminVideos() {
     load();
   };
 
-  const byCat = videos.reduce((acc, v) => {
-    (acc[v.category] = acc[v.category] || []).push(v);
-    return acc;
-  }, {});
+  // Read a video's categories as an array (legacy rows may only have `category`).
+  const catsOf = (v) => (v.categories?.length ? v.categories : v.category ? [v.category] : []);
+
+  // A video appears under every category it belongs to, in canonical order.
+  const byCat = {};
+  for (const c of CATEGORIES) {
+    const list = videos.filter((v) => catsOf(v).includes(c));
+    if (list.length) byCat[c] = list;
+  }
 
   return (
     <div className="space-y-6">
@@ -211,20 +227,6 @@ export default function AdminVideos() {
           )}
 
           <div>
-            <label className="text-xs uppercase text-slate-400">Category</label>
-            <input
-              className="input mt-1"
-              list="cat-list"
-              placeholder="e.g. Product Knowledge"
-              value={form.category}
-              onChange={(e) => set('category', e.target.value)}
-              required
-            />
-            <datalist id="cat-list">
-              {Object.keys(byCat).map((c) => <option key={c} value={c} />)}
-            </datalist>
-          </div>
-          <div>
             <label className="text-xs uppercase text-slate-400">Visible to (badge)</label>
             <select className="input mt-1" value={form.visibility} onChange={(e) => set('visibility', e.target.value)}>
               {VISIBILITY.map((o) => (
@@ -243,6 +245,37 @@ export default function AdminVideos() {
               value={form.sortOrder}
               onChange={(e) => set('sortOrder', e.target.value)}
             />
+          </div>
+        </div>
+
+        {/* Categories — a video can belong to several */}
+        <div>
+          <div className="flex items-center justify-between">
+            <label className="text-xs uppercase text-slate-400">
+              Categories <span className="text-slate-300">(pick one or more)</span>
+            </label>
+            <span className="text-xs text-slate-400">{form.categories.length} selected</span>
+          </div>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {CATEGORIES.map((c) => {
+              const checked = form.categories.includes(c);
+              return (
+                <label
+                  key={c}
+                  className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
+                    checked ? 'border-brand-400 bg-brand-50 text-brand-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 shrink-0 accent-brand-600"
+                    checked={checked}
+                    onChange={() => toggleCategory(c)}
+                  />
+                  <span>{c}</span>
+                </label>
+              );
+            })}
           </div>
         </div>
 
