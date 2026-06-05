@@ -1,5 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 import { adminApi } from '../../api/client.js';
+import InfoBanner from '../../components/InfoBanner.jsx';
+
+// Per-kind "how it works" explanation shown at the top of the page.
+const INFO = {
+  promotional: {
+    title: 'How the promotional video works',
+    body:
+      'Pick a date on the calendar and set the promotional video customers see that day. A date ' +
+      'turns green once it has a video and blue while you’re editing it. You can open past dates ' +
+      'to review what was shown — and customers get a date filter to watch previous days’ promos, ' +
+      'so this builds a daily archive.',
+  },
+  today: {
+    title: 'How Today’s video works',
+    body:
+      'Pick a date and set the video shown in the customer’s “Today’s video” section that day. A ' +
+      'date turns green once it has a video and blue while you’re editing it. You can set videos ' +
+      'ahead of time for upcoming dates; past dates are locked.',
+  },
+};
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -23,7 +43,9 @@ function karachiToday() {
 }
 
 // Reusable calendar manager for a "kind" of dated video (promotional | today).
-export default function AdminDatedVideos({ kind, title, blurb }) {
+// allowPast: let the admin browse past dates to review videos that were shown
+// (read-only — the backend rejects saving for a past date).
+export default function AdminDatedVideos({ kind, title, blurb, allowPast = false }) {
   const t0 = karachiToday();
   const todayStr = ymd(t0.y, t0.m, t0.d);
 
@@ -65,8 +87,10 @@ export default function AdminDatedVideos({ kind, title, blurb }) {
     setView({ y: d.getFullYear(), m: d.getMonth() });
   };
 
-  // Disable backward navigation once we're at the current (Karachi) month.
+  // Disable backward navigation once we're at the current (Karachi) month —
+  // unless this calendar allows browsing past dates (promotional).
   const atCurrentMonth = view.y < t0.y || (view.y === t0.y && view.m <= t0.m);
+  const canGoBack = allowPast || !atCurrentMonth;
 
   const firstWeekday = new Date(view.y, view.m, 1).getDay();
   const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
@@ -110,6 +134,7 @@ export default function AdminDatedVideos({ kind, title, blurb }) {
   };
 
   const current = entries[selected];
+  const isSelectedPast = selected < todayStr; // past dates are view-only
   const prettyDate = (() => {
     const [y, m, d] = selected.split('-').map(Number);
     return `${MONTHS[m - 1]} ${d}, ${y}`;
@@ -122,6 +147,8 @@ export default function AdminDatedVideos({ kind, title, blurb }) {
         {blurb && <p className="text-sm text-slate-500">{blurb}</p>}
       </div>
 
+      {INFO[kind] && <InfoBanner title={INFO[kind].title}>{INFO[kind].body}</InfoBanner>}
+
       <div className="flex flex-col gap-6 lg:flex-row">
         {/* Calendar */}
         <div className="lg:w-80 lg:shrink-0">
@@ -129,9 +156,9 @@ export default function AdminDatedVideos({ kind, title, blurb }) {
             <div className="mb-3 flex items-center justify-between">
               <button
                 onClick={() => shift(-1)}
-                disabled={atCurrentMonth}
+                disabled={!canGoBack}
                 className={`rounded-lg px-2 py-1 ${
-                  atCurrentMonth ? 'cursor-not-allowed text-slate-300' : 'text-slate-500 hover:bg-slate-100'
+                  !canGoBack ? 'cursor-not-allowed text-slate-300' : 'text-slate-500 hover:bg-slate-100'
                 }`}
               >
                 ‹
@@ -149,33 +176,41 @@ export default function AdminDatedVideos({ kind, title, blurb }) {
                 const has = !!entries[ds];
                 const isSel = ds === selected;
                 const isToday = ds === todayStr;
-                const isPast = ds < todayStr; // can't pick a passed date
+                const isPast = ds < todayStr;
+                const locked = isPast && !allowPast; // can't pick a passed date (unless browsing)
                 return (
                   <button
                     key={ds}
-                    disabled={isPast}
-                    title={isPast ? 'Past date — cannot be selected' : undefined}
-                    onClick={() => !isPast && setSelected(ds)}
+                    disabled={locked}
+                    title={locked ? 'Past date — cannot be selected' : undefined}
+                    onClick={() => !locked && setSelected(ds)}
                     className={`relative flex h-10 items-center justify-center rounded-lg text-sm transition ${
-                      isPast
+                      locked
                         ? 'cursor-not-allowed text-slate-300 line-through'
                         : isSel
-                        ? has
-                          ? 'bg-emerald-500 font-bold text-white' // selected + already has a video
-                          : 'bg-brand-600 font-bold text-white'
+                        ? 'bg-brand-600 font-bold text-white' // selected → full blue box
+                        : has
+                        ? 'bg-emerald-500 font-bold text-white' // has a video → full green box
+                        : isPast
+                        ? 'text-slate-400 hover:bg-slate-100' // past, browsable, no video
                         : 'text-slate-700 hover:bg-slate-100'
                     } ${isToday && !isSel ? 'ring-1 ring-brand-300' : ''}`}
                   >
                     {d}
-                    {has && (
-                      <span className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${isSel ? 'bg-white' : 'bg-emerald-500'}`} />
+                    {has && isSel && (
+                      <span className="absolute bottom-1 h-1.5 w-1.5 rounded-full bg-white" />
                     )}
                   </button>
                 );
               })}
             </div>
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> has a video
+            <p className="mt-3 flex items-center gap-3 text-xs text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded bg-emerald-500" /> has a video
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded bg-brand-600" /> selected
+              </span>
             </p>
           </div>
         </div>
@@ -200,6 +235,14 @@ export default function AdminDatedVideos({ kind, title, blurb }) {
               </div>
             )}
 
+            {isSelectedPast ? (
+              <p className="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-500">
+                {current
+                  ? '📅 Past date — showing the video that was set. Past dates are view-only.'
+                  : 'No video was set for this date.'}
+              </p>
+            ) : (
+              <>
             {/* Source toggle */}
             <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
               <button
@@ -261,6 +304,8 @@ export default function AdminDatedVideos({ kind, title, blurb }) {
               )}
               {msg && <span className="text-sm text-slate-500">{msg}</span>}
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>

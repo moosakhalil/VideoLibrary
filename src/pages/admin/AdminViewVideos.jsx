@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { adminApi } from '../../api/client.js';
 import { CATEGORIES } from '../../constants/categories.js';
+import InfoBanner from '../../components/InfoBanner.jsx';
 
 // Short visibility tag mirroring the upload form's options.
 const BADGE_SHORT = ['Everyone', 'First Ref+', 'Bronze+', 'Silver+', 'Gold+', 'Platinum+', 'Master+', 'Ambassador'];
@@ -31,6 +32,11 @@ export default function AdminViewVideos() {
         <h1 className="text-2xl font-bold text-slate-800">View videos</h1>
         <p className="text-sm text-slate-500">Watch each video and its sample exactly as stored.</p>
       </div>
+
+      <InfoBanner title="Previewing your videos">
+        A read-only preview of every video and its sample, exactly as customers see it, filtered
+        by category. Nothing here changes your data — use the Videos tab to add, edit, or delete.
+      </InfoBanner>
 
       {/* Category filter chips */}
       <div className="flex flex-wrap gap-2">

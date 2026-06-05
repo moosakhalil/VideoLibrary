@@ -1,16 +1,19 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import api from '../api/client.js';
 import { CATEGORIES } from '../constants/categories.js';
+import InfoBanner from '../components/InfoBanner.jsx';
 
 export default function Videos() {
   const [data, setData] = useState(null);
   const [playing, setPlaying] = useState(null); // video id currently playing (YouTube)
   const [category, setCategory] = useState('all'); // selected category filter
   const [featured, setFeatured] = useState(null); // { promotional, today } for today
+  const [promo, setPromo] = useState(null); // { today, items: [...] } promotional history
 
   useEffect(() => {
     api.get('/web/videos/library').then((r) => setData(r.data)).catch(() => {});
     api.get('/web/videos/featured').then((r) => setFeatured(r.data)).catch(() => {});
+    api.get('/web/videos/promotional').then((r) => setPromo(r.data)).catch(() => {});
   }, []);
 
   // Categories that actually have videos, in canonical order, plus a count each.
@@ -46,8 +49,21 @@ export default function Videos() {
 
   const idx = data.badgeIndex || 0;
 
+  // Promotional videos: today's (featured on top) and the previous days' (grid below).
+  const hasPromo = promo?.items?.length > 0;
+  const todayPromo = promo?.items?.find((it) => it.date === promo.today) || null;
+  const pastPromos = promo?.items?.filter((it) => it.date !== promo.today) || [];
+
   return (
     <div>
+      <div className="mb-6">
+        <InfoBanner title="How the video library works">
+          Browse knowledge videos by category. Videos unlock as you reach higher levels — locked
+          ones show a short sample preview. The Featured section has the daily promotional video
+          (with a date filter to watch past days) and today’s video.
+        </InfoBanner>
+      </div>
+
       {/* Level hero */}
       <div className="mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-700 p-6 text-white shadow-lg sm:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
@@ -88,20 +104,20 @@ export default function Videos() {
         {/* Left-side filter menu: featured videos + categories */}
         <aside className="lg:w-60 lg:shrink-0">
           <div className="sticky top-4 rounded-2xl bg-white p-3 shadow-sm">
-            {(featured?.promotional || featured?.today) && (
+            {(hasPromo || featured?.today) && (
               <>
                 <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Featured
                 </p>
                 <nav className="mb-3 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
-                  {featured.promotional && (
+                  {hasPromo && (
                     <CatButton
                       label="📣 Promotional video"
                       active={category === 'promo'}
                       onClick={() => setCategory('promo')}
                     />
                   )}
-                  {featured.today && (
+                  {featured?.today && (
                     <CatButton
                       label="⭐ Today's video"
                       active={category === 'today'}
@@ -137,8 +153,31 @@ export default function Videos() {
 
         {/* Right side: featured player, or levels stacked highest-on-top */}
         <div className="min-w-0 flex-1">
-          {category === 'promo' && featured?.promotional && (
-            <FeaturedCard label="📣 Promotional video" item={featured.promotional} />
+          {category === 'promo' && (
+            <div className="space-y-6">
+              {todayPromo ? (
+                <FeaturedCard label="📣 Promotional video — Today" item={todayPromo} />
+              ) : (
+                <p className="text-sm text-slate-500">No promotional video for today.</p>
+              )}
+
+              {pastPromos.length > 0 && (
+                <div>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Previous days
+                  </p>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {pastPromos.map((it) => (
+                      <FeaturedCard
+                        key={it.date}
+                        label={`📅 ${promoDateLabel(it.date, promo.today)}`}
+                        item={it}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
           {category === 'today' && featured?.today && (
             <FeaturedCard label="⭐ Today's video" item={featured.today} />
@@ -172,6 +211,15 @@ export default function Videos() {
       </div>
     </div>
   );
+}
+
+const PROMO_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// "2026-06-05" -> "Today — Jun 5, 2026" (or just the date for past days).
+function promoDateLabel(dateStr, today) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const base = `${PROMO_MONTHS[m - 1]} ${d}, ${y}`;
+  return dateStr === today ? `Today — ${base}` : base;
 }
 
 function FeaturedCard({ label, item }) {

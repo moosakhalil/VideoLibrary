@@ -1,10 +1,58 @@
 import { useEffect, useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import Badge from '../components/Badge.jsx';
 import ProgressBar from '../components/ProgressBar.jsx';
+import InfoBanner from '../components/InfoBanner.jsx';
+import Referrals from './Referrals.jsx';
+import StatusSubmit from './StatusSubmit.jsx';
+
+// Home is a tabbed shell: Progress, Warm Leads and Status live here as tabs
+// (driven by the URL so deep links and the back button still work).
+const TABS = [
+  { to: '/', label: 'Progress', icon: '🏆' },
+  { to: '/referrals', label: 'Warm Leads', icon: '🤝' },
+  { to: '/status', label: 'Status', icon: '📸' },
+];
 
 export default function Dashboard() {
+  const { pathname } = useLocation();
+  const tab = pathname.startsWith('/referrals')
+    ? 'referrals'
+    : pathname.startsWith('/status')
+    ? 'status'
+    : 'progress';
+
+  return (
+    <div className="space-y-6">
+      <nav className="flex gap-1 rounded-xl bg-white p-1 shadow-sm">
+        {TABS.map((t) => (
+          <NavLink
+            key={t.to}
+            to={t.to}
+            end={t.to === '/'}
+            className={({ isActive }) =>
+              `flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                isActive ? 'bg-brand-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+              }`
+            }
+          >
+            <span>{t.icon}</span>
+            <span>{t.label}</span>
+          </NavLink>
+        ))}
+      </nav>
+
+      {tab === 'progress' && <ProgressTab />}
+      {tab === 'referrals' && <Referrals />}
+      {tab === 'status' && <StatusSubmit />}
+    </div>
+  );
+}
+
+// The original dashboard content, now the "Progress" tab.
+function ProgressTab() {
   const { customer } = useAuth();
   const [progress, setProgress] = useState(null);
   const [rewards, setRewards] = useState(null);
@@ -25,6 +73,12 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-800">My Progress</h1>
+
+      <InfoBanner title="Your progress at a glance">
+        This is your home screen. It shows your current level and badge, how many warm leads and
+        verified WhatsApp statuses you have, your progress toward the next level, and any rewards
+        that are currently active. Add warm leads and statuses to level up.
+      </InfoBanner>
 
       {/* Hero badge card */}
       <div className="card flex flex-col items-center gap-4 bg-gradient-to-br from-brand-600 to-brand-700 text-white sm:flex-row sm:items-center sm:p-6">

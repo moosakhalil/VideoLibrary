@@ -3,8 +3,6 @@ import { useAuth } from './context/AuthContext.jsx';
 import Layout from './components/Layout.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import Referrals from './pages/Referrals.jsx';
-import StatusSubmit from './pages/StatusSubmit.jsx';
 import Rewards from './pages/Rewards.jsx';
 import Videos from './pages/Videos.jsx';
 import Profile from './pages/Profile.jsx';
@@ -40,9 +38,11 @@ export default function App() {
           </Protected>
         }
       >
+        {/* Home is a tabbed shell — these three paths render the same page, with
+            Progress / Warm Leads / Status selected by the URL. */}
         <Route path="/" element={<Dashboard />} />
-        <Route path="/referrals" element={<Referrals />} />
-        <Route path="/status" element={<StatusSubmit />} />
+        <Route path="/referrals" element={<Dashboard />} />
+        <Route path="/status" element={<Dashboard />} />
         <Route path="/rewards" element={<Rewards />} />
         <Route path="/videos" element={<Videos />} />
         <Route path="/profile" element={<Profile />} />
@@ -55,7 +55,7 @@ export default function App() {
         <Route path="view" element={<AdminViewVideos />} />
         <Route path="categories" element={<AdminCategories />} />
         <Route path="status-videos" element={<AdminStatusVideos />} />
-        <Route path="promotional" element={<AdminDatedVideos kind="promotional" title="Promotional video" blurb="Pick a date and set the promotional video shown to customers on that day." />} />
+        <Route path="promotional" element={<AdminDatedVideos kind="promotional" title="Promotional video" blurb="Pick a date and set the promotional video shown to customers on that day. Browse past dates to review videos that were shown." allowPast />} />
         <Route path="today" element={<AdminDatedVideos kind="today" title="Today's video" blurb="Pick a date and set the video shown in the customer's Today's video section on that day." />} />
         <Route path="status" element={<AdminStatus />} />
         <Route path="customers" element={<AdminCustomers />} />

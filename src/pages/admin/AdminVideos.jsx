@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { adminApi } from '../../api/client.js';
 import { CATEGORIES } from '../../constants/categories.js';
+import InfoBanner from '../../components/InfoBanner.jsx';
 
 const EMPTY = { title: '', youtubeId: '', categories: [], visibility: 'all', sortOrder: 0, sampleYoutubeId: '' };
 
@@ -161,6 +162,14 @@ export default function AdminVideos() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-800">Knowledge Videos</h1>
+
+      <InfoBanner title="Managing knowledge videos">
+        Add a video by YouTube link or file upload, give it one or more categories, and choose
+        which badge level can watch it — access is cumulative, so a higher level sees everything
+        below it too. Optionally add a sample/teaser shown to customers who haven’t unlocked the
+        full video. Use Edit or Delete on any video in the list, and the active/hidden toggle to
+        show or hide it from customers without deleting.
+      </InfoBanner>
 
       <form onSubmit={save} className="card space-y-4">
         <p className="font-semibold text-slate-700">{editingId ? 'Edit video' : 'Add a video'}</p>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi } from '../../api/client.js';
+import InfoBanner from '../../components/InfoBanner.jsx';
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
@@ -24,6 +25,13 @@ export default function AdminCustomers() {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold text-slate-800">Customers</h1>
+
+      <InfoBanner title="Managing customers">
+        Every customer who signs up appears here with their badge, warm-lead count, and verified
+        statuses. “+ Warm lead” records a verified warm lead for them; “Reset PIN” clears their
+        PIN so they set a new one at next login. Warm leads and verified statuses both feed the
+        reward engine automatically.
+      </InfoBanner>
 
       {customers.length === 0 && (
         <p className="text-sm text-slate-500">No customers yet — they appear here after signing up.</p>

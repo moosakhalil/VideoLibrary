@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client.js';
+import InfoBanner from '../components/InfoBanner.jsx';
 
 export default function Rewards() {
   const [data, setData] = useState(null);
@@ -22,6 +23,12 @@ export default function Rewards() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-slate-800">Rewards</h1>
+
+      <InfoBanner title="How rewards work">
+        As you reach higher levels you earn discounts on your next purchase, and at the top levels
+        you get temporary access to the VIP batch catalog. Discounts show here as available, used,
+        or expired — keep leveling up to unlock more.
+      </InfoBanner>
 
       <div className="card">
         <p className="mb-2 text-xs uppercase tracking-wide text-slate-400">Discounts</p>

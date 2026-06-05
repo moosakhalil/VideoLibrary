@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client.js';
+import InfoBanner from '../components/InfoBanner.jsx';
 
 export default function Referrals() {
   const [ref, setRef] = useState(null);
@@ -31,6 +32,12 @@ export default function Referrals() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-slate-800">Warm Leads</h1>
+
+      <InfoBanner title="How warm leads work">
+        Share your referral code or WhatsApp link with people you know. When someone you invited
+        messages the business and says hi, they become a “warm lead” and count toward your level.
+        Track who was invited, who said hi, and who became a customer below.
+      </InfoBanner>
 
       <div className="card space-y-3">
         <p className="text-xs uppercase tracking-wide text-slate-400">Your referral code</p>

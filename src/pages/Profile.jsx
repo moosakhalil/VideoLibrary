@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import InfoBanner from '../components/InfoBanner.jsx';
 
 export default function Profile() {
   const { customer, setCustomer, logout } = useAuth();
@@ -33,6 +34,11 @@ export default function Profile() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-slate-800">Profile</h1>
+
+      <InfoBanner title="Your profile">
+        Update the name shown on your account here. Your phone number is fixed — it’s how you sign
+        in — so it can’t be changed. Use “Log out” to end your session on this device.
+      </InfoBanner>
 
       <form onSubmit={save} className="card space-y-3">
         <div>

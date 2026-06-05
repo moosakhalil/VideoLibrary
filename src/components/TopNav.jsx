@@ -1,10 +1,13 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
+// Home covers the tabbed pages (Progress / Warm Leads / Status).
+const HOME_PATHS = ['/', '/referrals', '/status'];
+
+// Warm Leads and Status now live as tabs on the Home page, so they're not
+// repeated here in the top navigation.
 const links = [
   { to: '/', label: 'Home', icon: '🏆' },
-  { to: '/referrals', label: 'Warm Leads', icon: '🤝' },
-  { to: '/status', label: 'Status', icon: '📸' },
   { to: '/rewards', label: 'Rewards', icon: '🎁' },
   { to: '/videos', label: 'Videos', icon: '▶️' },
   { to: '/profile', label: 'Profile', icon: '👤' },
@@ -13,11 +16,16 @@ const links = [
 export default function TopNav() {
   const { customer, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const doLogout = async () => {
     await logout();
     navigate('/login', { replace: true });
   };
+
+  // Keep "Home" highlighted across its tab routes; others match by prefix.
+  const isLinkActive = (to) =>
+    to === '/' ? HOME_PATHS.includes(pathname) : pathname === to || pathname.startsWith(`${to}/`);
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -39,13 +47,11 @@ export default function TopNav() {
               key={l.to}
               to={l.to}
               end={l.to === '/'}
-              className={({ isActive }) =>
-                `flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`
-              }
+              className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                isLinkActive(l.to)
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
             >
               <span>{l.icon}</span>
               <span className="hidden md:inline">{l.label}</span>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi } from '../../api/client.js';
+import InfoBanner from '../../components/InfoBanner.jsx';
 
 export default function AdminStatus() {
   const [subs, setSubs] = useState([]);
@@ -35,6 +36,13 @@ export default function AdminStatus() {
           <option value="">All</option>
         </select>
       </div>
+
+      <InfoBanner title="Reviewing status submissions">
+        Customers upload screenshots of the WhatsApp status they posted. Approve one to count it
+        toward that customer’s level and unlock their reward video; reject with an optional reason.
+        Use the filter to switch between pending, verified, and rejected. Un-approving a verified
+        status removes that count again.
+      </InfoBanner>
 
       {subs.length === 0 && <p className="text-sm text-slate-500">Nothing here.</p>}
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi } from '../../api/client.js';
+import InfoBanner from '../../components/InfoBanner.jsx';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -38,6 +39,12 @@ export default function AdminCategories() {
         </p>
         {msg && <p className="mt-1 text-sm text-red-500">{msg}</p>}
       </div>
+
+      <InfoBanner title="How categories work">
+        Categories group your videos for customers. Turn one off to instantly hide every video in
+        it — without deleting anything — and turn it back on whenever you like. Only categories
+        that are on, and that contain at least one video, appear to customers.
+      </InfoBanner>
 
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
         {categories.map((c) => (
