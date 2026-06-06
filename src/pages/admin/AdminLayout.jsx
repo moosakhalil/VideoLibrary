@@ -8,8 +8,6 @@ const tabs = [
   { to: '/admin/status-videos', label: 'Status videos' },
   { to: '/admin/promotional', label: 'Promotional video' },
   { to: '/admin/today', label: "Today's video" },
-  { to: '/admin/status', label: 'Status review' },
-  { to: '/admin/customers', label: 'Customers' },
 ];
 
 export default function AdminLayout() {

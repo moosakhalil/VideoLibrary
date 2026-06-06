@@ -14,8 +14,6 @@ import AdminViewVideos from './pages/admin/AdminViewVideos.jsx';
 import AdminCategories from './pages/admin/AdminCategories.jsx';
 import AdminStatusVideos from './pages/admin/AdminStatusVideos.jsx';
 import AdminDatedVideos from './pages/admin/AdminDatedVideos.jsx';
-import AdminStatus from './pages/admin/AdminStatus.jsx';
-import AdminCustomers from './pages/admin/AdminCustomers.jsx';
 
 function Protected({ children }) {
   const { customer, loading } = useAuth();
@@ -57,8 +55,6 @@ export default function App() {
         <Route path="status-videos" element={<AdminStatusVideos />} />
         <Route path="promotional" element={<AdminDatedVideos kind="promotional" title="Promotional video" blurb="Pick a date and set the promotional video shown to customers on that day. Browse past dates to review videos that were shown." allowPast />} />
         <Route path="today" element={<AdminDatedVideos kind="today" title="Today's video" blurb="Pick a date and set the video shown in the customer's Today's video section on that day." />} />
-        <Route path="status" element={<AdminStatus />} />
-        <Route path="customers" element={<AdminCustomers />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

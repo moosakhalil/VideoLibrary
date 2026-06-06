@@ -10,9 +10,6 @@ export default function Rewards() {
   }, []);
 
   const vip = data?.vipCatalog;
-  const vipDaysLeft = vip?.expiresAt
-    ? Math.max(0, Math.ceil((new Date(vip.expiresAt) - Date.now()) / 86400000))
-    : 0;
 
   const stateBadge = {
     available: 'bg-emerald-100 text-emerald-700',
@@ -54,7 +51,7 @@ export default function Rewards() {
         <div className="card border-2 border-violet-200">
           <div className="mb-2 flex items-center justify-between">
             <p className="font-bold text-violet-700">💎 VIP Batch Catalog</p>
-            <span className="text-xs font-semibold text-violet-600">{vipDaysLeft} day(s) left</span>
+            <span className="text-xs font-semibold text-violet-600">active</span>
           </div>
           <p className="mb-3 text-sm text-slate-600">
             Exclusive batch pricing — available to you while your VIP access is active.

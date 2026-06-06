@@ -62,13 +62,9 @@ function ProgressTab() {
     api.get('/web/me/rewards').then((r) => setRewards(r.data)).catch(() => {});
   }, []);
 
-  const ka = progress?.keepAlive;
   const availableDiscounts = (rewards?.discounts || []).filter((d) => d.state === 'available');
   const vip = rewards?.vipCatalog;
-
-  const vipDaysLeft = vip?.expiresAt
-    ? Math.max(0, Math.ceil((new Date(vip.expiresAt) - Date.now()) / 86400000))
-    : 0;
+  const notInSystem = progress && progress.found === false;
 
   return (
     <div className="space-y-6">
@@ -79,6 +75,13 @@ function ProgressTab() {
         verified WhatsApp statuses you have, your progress toward the next level, and any rewards
         that are currently active. Add warm leads and statuses to level up.
       </InfoBanner>
+
+      {notInSystem && (
+        <div className="card border-l-4 border-amber-400 text-sm text-amber-700">
+          You're not in our rewards system yet — your warm leads and verified statuses will appear
+          here once you're added. You can still watch the knowledge videos below.
+        </div>
+      )}
 
       {/* Hero badge card */}
       <div className="card flex flex-col items-center gap-4 bg-gradient-to-br from-brand-600 to-brand-700 text-white sm:flex-row sm:items-center sm:p-6">
@@ -93,26 +96,6 @@ function ProgressTab() {
           </div>
         </div>
       </div>
-
-      {/* Keep-alive */}
-      {ka && (
-        <div
-          className={`card text-sm ${
-            ka.isActive ? 'border-l-4 border-emerald-400' : 'border-l-4 border-amber-400'
-          }`}
-        >
-          {ka.isActive ? (
-            <p className="font-medium text-emerald-700">
-              ✅ Active — {ka.recentActivities} activities in the last {ka.windowDays} days.
-            </p>
-          ) : (
-            <p className="font-medium text-amber-700">
-              ⚠️ You're close to inactive — get {ka.moreNeeded} more activity(s) in {ka.windowDays}{' '}
-              days to stay active. You keep your badge either way.
-            </p>
-          )}
-        </div>
-      )}
 
       {/* Two-column on desktop: progress + rewards */}
       <div className="grid gap-6 lg:grid-cols-2">
@@ -148,7 +131,7 @@ function ProgressTab() {
           {vip?.isActive && (
             <div className="flex items-center justify-between rounded-xl bg-violet-50 px-3 py-2">
               <span className="text-sm font-medium text-violet-700">VIP catalog</span>
-              <span className="text-xs font-semibold text-violet-600">{vipDaysLeft} day(s) left</span>
+              <span className="text-xs font-semibold text-violet-600">active</span>
             </div>
           )}
         </div>

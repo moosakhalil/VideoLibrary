@@ -23,12 +23,6 @@ export default function Referrals() {
     }
   };
 
-  const stateLabel = {
-    'became-customer': { text: 'Became customer', cls: 'text-emerald-600' },
-    'said-hi': { text: 'Said hi ✓', cls: 'text-brand-600' },
-    invited: { text: 'Invited', cls: 'text-slate-400' },
-  };
-
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-slate-800">Warm Leads</h1>
@@ -36,7 +30,6 @@ export default function Referrals() {
       <InfoBanner title="How warm leads work">
         Share your referral code or WhatsApp link with people you know. When someone you invited
         messages the business and says hi, they become a “warm lead” and count toward your level.
-        Track who was invited, who said hi, and who became a customer below.
       </InfoBanner>
 
       <div className="card space-y-3">
@@ -60,38 +53,12 @@ export default function Referrals() {
       </div>
 
       {list && (
-        <div className="card">
-          <div className="mb-3 grid grid-cols-3 gap-2 text-center">
-            <Stat label="Qualified" value={list.qualified} />
-            <Stat label="Customers" value={list.becameCustomers} />
-            <Stat label="Total" value={list.total} />
-          </div>
-          <p className="mb-2 text-xs uppercase tracking-wide text-slate-400">Your warm leads</p>
-          <div className="divide-y divide-slate-100">
-            {list.people.length === 0 && (
-              <p className="py-3 text-sm text-slate-500">No warm leads yet. Share your code!</p>
-            )}
-            {list.people.map((p) => {
-              const s = stateLabel[p.state] || stateLabel.invited;
-              return (
-                <div key={p.id} className="flex items-center justify-between py-2">
-                  <span className="text-sm font-medium text-slate-700">{p.name}</span>
-                  <span className={`text-xs font-semibold ${s.cls}`}>{s.text}</span>
-                </div>
-              );
-            })}
-          </div>
+        <div className="card text-center">
+          <p className="text-xs uppercase tracking-wide text-slate-400">Your warm leads</p>
+          <p className="text-3xl font-bold text-brand-700">{list.qualified ?? 0}</p>
+          <p className="text-xs text-slate-500">These count toward your level.</p>
         </div>
       )}
-    </div>
-  );
-}
-
-function Stat({ label, value }) {
-  return (
-    <div className="rounded-xl bg-slate-50 py-2">
-      <p className="text-lg font-bold text-slate-800">{value}</p>
-      <p className="text-xs text-slate-500">{label}</p>
     </div>
   );
 }
